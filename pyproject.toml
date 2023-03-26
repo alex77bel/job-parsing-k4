@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "job-parsing-k4"
+version = "0.1.0"
+description = ""
+authors = ["aleksandr churilin <alex77bel@yandex.ru>"]
+readme = "README.md"
+packages = [{include = "job_parsing_k4"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
