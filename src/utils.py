@@ -33,7 +33,7 @@ def filter_by_service(service: int):  # фильтрует коллекцию Va
 def filter_by_requirement(word: str):  # фильтрует коллекцию Vacancy.all по фразе в поле requirement
     result = []
     for vacancy in Vacancy.all:
-        if word in vacancy.requirement:
+        if word.lower() in vacancy.requirement.lower():
             result.append(vacancy)
     Vacancy.all = result
 
