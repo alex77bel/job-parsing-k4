@@ -8,6 +8,8 @@ packages = [{include = "job_parsing_k4"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
+requests = "^2.28.2"
+mypy = "^1.2.0"
 
 
 [build-system]
