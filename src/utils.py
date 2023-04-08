@@ -90,7 +90,7 @@ def add_json(srv: HH | SJ, vcn: HHVacancy | SJVacancy, keyword: str, file: JSONF
     Загружает вакансии с сервиса, добавляет их в JSON файл
     """
     items = srv.get_request(keyword)  # получаем вакансии с сервиса в виде списка
-    print('Найдено', len(items), 'вакансий на HeadHunter')
+    print(f'Найдено {len(items)} вакансий на', 'HeadHunter' if srv.__class__.__name__ == 'HH' else 'SuperJob')
     print('Обработка результатов...')
     for item in items:  # сохраняем данные в файл
         file.insert(vcn(item))
