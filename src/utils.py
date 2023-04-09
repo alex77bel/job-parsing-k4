@@ -92,8 +92,9 @@ def add_json(srv: HH | SJ, vcn: HHVacancy | SJVacancy, keyword: str, file: JSONF
     items = srv.get_request(keyword)  # получаем вакансии с сервиса в виде списка
     print(f'Найдено {len(items)} вакансий на', 'HeadHunter' if srv.__class__.__name__ == 'HH' else 'SuperJob')
     print('Обработка результатов...')
-    for item in items:  # сохраняем данные в файл
-        file.insert(vcn(item))
+    for item in items:  # создаем коллекцию экземпляров вакансий
+        Vacancy.all.append(vcn(item))
+    file.insert(Vacancy.all)  # сохраняем данные в файл
 
 
 def print_result():  # вывод результатов
@@ -107,8 +108,7 @@ def print_result():  # вывод результатов
         Vacancy.all.sort()
 
         while True:
-            select = input('\t- Вывести:'
-                           '("0" - все отсортированные | "1" - top n | "stop" - выход):\n')
+            select = input('\t- Вывести ("0" - все отсортированные | "1" - top n | "stop" - выход):\n')
             if select in ('0', '1', 'stop'): break
         if select == 'stop': return 'stop'
         if select == '1':

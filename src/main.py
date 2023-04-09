@@ -23,7 +23,7 @@ def main():
         # Загружаем вакансии с сервиса, добавляет их в JSON файл
         if user_input[0] in ('0', '1'):  # если выбран НН или оба
             add_json(HH(), HHVacancy, user_input[1], file_interface)
-        if user_input[0] in ('0', '2'):
+        if user_input[0] in ('0', '2'):  # если выбран SJ или оба
             add_json(SJ(), SJVacancy, user_input[1], file_interface)
 
     # здесь имеем готовый файл для работы

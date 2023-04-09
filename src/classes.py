@@ -10,7 +10,7 @@ class Vacancy:
     """
     Класс вакансии
     """
-    all: list = []  # для временного хранения экземпляров вакансий при сортировке и т.д.
+    all: list = []  # буфер для временного хранения экземпляров вакансий при сортировке и т.д.
 
     def __init__(self, **attrs):  # создаем экземпляр с нужными полями
         try:
@@ -206,7 +206,7 @@ class JSONFileInterface(FileInterface):
             self.datafile = []  # создаем пустой, если не существует
 
     @property
-    def datafile(self):  # геттер, читаем файл
+    def datafile(self) -> list | None:  # геттер, читаем файл
         with open(self.filename, encoding='utf-8') as file:
             try:  # пробуем преобразовать в JSON
                 data = json.load(file)
@@ -216,7 +216,7 @@ class JSONFileInterface(FileInterface):
                 return data
 
     @datafile.setter
-    def datafile(self, data):  # сеттер, пишем файл
+    def datafile(self, data: list):  # сеттер, пишем файл
         with open(self.filename, 'w', encoding='utf-8') as file:
             json.dump(data, file, ensure_ascii=False, indent=2)
 
@@ -244,10 +244,11 @@ class JSONFileInterface(FileInterface):
                     file_ready = False
         return file_ready
 
-    def insert(self, data: Vacancy):  # добавление данных в файл
-        res = self.datafile
-        res.append(data.__dict__)
-        self.datafile = res
+    def insert(self, data: list):  # добавление данных из коллекции Vacancy.all в файл
+        result = self.datafile
+        for item in data:
+            result.append(item.__dict__)
+        self.datafile = result
 
     @staticmethod
     def is_file_exists(filename) -> bool:
