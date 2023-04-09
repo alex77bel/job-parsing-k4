@@ -84,11 +84,11 @@ class HHVacancy(Vacancy):
                              url=data['alternate_url'],
                              requirement=data['snippet']['requirement'],
                              salary_from=0 if data['salary']['from'] is None else
-                             int(data['salary']['from']) if data['salary']['currency'] == 'RUR'
-                             else int(data['salary']['from']) * EXCHANGERATE,
+                             data['salary']['from'] if data['salary']['currency'] == 'RUR'
+                             else data['salary']['from'] * EXCHANGERATE,
                              salary_to=0 if data['salary']['to'] is None else
-                             int(data['salary']['to']) if data['salary']['currency'] == 'RUR'
-                             else int(data['salary']['to']) * EXCHANGERATE)
+                             data['salary']['to'] if data['salary']['currency'] == 'RUR'
+                             else data['salary']['to'] * EXCHANGERATE)
         self.service_name = "HeadHunter"
 
 
@@ -109,11 +109,11 @@ class SJVacancy(Vacancy):
                              url=data['link'],
                              requirement=data['candidat'],
                              salary_from=0 if data['payment_from'] is None else
-                             int(data['payment_from']) if data['currency'] == 'rub'
-                             else int(data['payment_from']) * EXCHANGERATE,
+                             data['payment_from'] if data['currency'] == 'rub'
+                             else data['payment_from'] * EXCHANGERATE,
                              salary_to=0 if data['payment_to'] is None else
-                             int(data['payment_to']) if data['currency'] == 'rub'
-                             else int(data['payment_to']) * EXCHANGERATE)
+                             data['payment_to'] if data['currency'] == 'rub'
+                             else data['payment_to'] * EXCHANGERATE)
         self.service_name = "SuperJob"
 
 
