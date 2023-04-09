@@ -12,22 +12,22 @@ class Vacancy:
     """
     all: list = []  # буфер для временного хранения экземпляров вакансий при сортировке и т.д.
 
-    def __init__(self, **attrs):  # создаем экземпляр с нужными полями
+    def __init__(self, **attrs) -> None:  # создаем экземпляр с нужными полями
         try:
-            self.name = attrs['name']  # название вакансии
-            self.url = attrs['url']  # ссылка на вакансию
-            self.req = attrs['requirement']  # требования
-            self.salary_from = attrs['salary_from']  # зп от
-            self.salary_to = attrs['salary_to']  # зп до
+            self.name: str = attrs['name']  # название вакансии
+            self.url: str = attrs['url']  # ссылка на вакансию
+            self.req: str = attrs['requirement']  # требования
+            self.salary_from: int = attrs['salary_from']  # зп от
+            self.salary_to: int = attrs['salary_to']  # зп до
         except KeyError as err:
             raise KeyError(err)
 
-    @property
-    def req(self):
+    @property  # геттер для requirement
+    def req(self) -> str:
         return self.requirement
 
-    @req.setter  # сеттер для фильтрации
-    def req(self, value: str):
+    @req.setter  # сеттер для фильтрации requirement
+    def req(self, value: str) -> None:
         if value:  # очистка поля requirement от всяких странных символов
             value = value.replace('<highlighttext>', '').replace('</highlighttext>', '')
             regex = r'[^a-zA-Zа-яА-ЯёЁ\d~`!?@№#$%^&*\-+\[\]{}()<>|\/\\.,;:"\'«»–— ]+'
@@ -37,7 +37,7 @@ class Vacancy:
             self.requirement = ''
 
     @property  # геттер для методов сравнения
-    def salary(self):
+    def salary(self) -> int:
         return self.salary_to if self.salary_to else self.salary_from
 
     def __str__(self) -> str:
@@ -49,19 +49,19 @@ class Vacancy:
                f"{self.salary_to if self.salary_to else ''} руб/мес\n"
 
     # методы сравнения
-    def __gt__(self, other):
+    def __gt__(self, other) -> bool:
         return self.salary > other.salary
 
-    def __lt__(self, other):
+    def __lt__(self, other) -> bool:
         return self.salary < other.salary
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return self.salary == other.salary
 
-    def __ge__(self, other):
+    def __ge__(self, other) -> bool:
         return self.salary >= other.salary
 
-    def __le__(self, other):
+    def __le__(self, other) -> bool:
         return self.salary <= other.salary
 
 
@@ -70,7 +70,7 @@ class HHVacancy(Vacancy):
     Вакансия HeadHunter
     """
 
-    def __init__(self, data: dict):
+    def __init__(self, data: dict) -> None:
         if data.get('service_name'):  # если создаем из файла
             super().__init__(name=data['name'],  # название вакансии
                              url=data['url'],  # ссылка на вакансию
@@ -91,7 +91,7 @@ class SJVacancy(Vacancy):
     Вакансия SuperJob
     """
 
-    def __init__(self, data: dict):
+    def __init__(self, data: dict) -> None:
         if data.get('service_name'):  # если создаем из файла
             super().__init__(name=data['name'],  # название вакансии
                              url=data['url'],  # ссылка на вакансию
@@ -138,7 +138,7 @@ class HH(API):
         except Exception as err:
             raise Exception(err)
 
-    def get_request(self, keyword: str) -> list:  # формирует запрос, с циклом по числу найденных страниц
+    def get_request(self, keyword: str) -> list[dict]:  # формирует запрос, с циклом по числу найденных страниц
         result = []
         print('Идет поиск на HeadHunter...')
         for page in range(10):  # пробуем прочитать 10 страниц по 100 вакансий
@@ -174,7 +174,7 @@ class SJ(API):
         except Exception as err:
             raise Exception(err)
 
-    def get_request(self, keyword: str) -> list:  # формирует запрос, с циклом по числу найденных страниц
+    def get_request(self, keyword: str) -> list[dict]:  # формирует запрос, с циклом по числу найденных страниц
         result = []
         print('Идет поиск на SuperJob...')
 
@@ -200,13 +200,13 @@ class JSONFileInterface(FileInterface):
     Класс для работы с JSON-файлом данных
     """
 
-    def __init__(self, filename: str):
+    def __init__(self, filename: str) -> None:
         self.filename = filename  # при инициализации экземпляра
         if not self.is_file_exists(self.filename):  # проверяем существование файла
             self.datafile = []  # создаем пустой, если не существует
 
     @property
-    def datafile(self) -> list | None:  # геттер, читаем файл
+    def datafile(self) -> list[dict] | None:  # геттер, читаем файл
         with open(self.filename, encoding='utf-8') as file:
             try:  # пробуем преобразовать в JSON
                 data = json.load(file)
@@ -216,7 +216,7 @@ class JSONFileInterface(FileInterface):
                 return data
 
     @datafile.setter
-    def datafile(self, data: list):  # сеттер, пишем файл
+    def datafile(self, data: list[dict]) -> None:  # сеттер, пишем файл
         with open(self.filename, 'w', encoding='utf-8') as file:
             json.dump(data, file, ensure_ascii=False, indent=2)
 
@@ -244,12 +244,12 @@ class JSONFileInterface(FileInterface):
                     file_ready = False
         return file_ready
 
-    def insert(self, data: list):  # добавление данных из коллекции Vacancy.all в файл
+    def insert(self, data: list[Vacancy]) -> None:  # добавление данных из коллекции Vacancy.all в файл
         result = self.datafile
         for item in data:
             result.append(item.__dict__)
         self.datafile = result
 
     @staticmethod
-    def is_file_exists(filename) -> bool:
+    def is_file_exists(filename: str) -> bool:
         return os.path.exists(filename)
