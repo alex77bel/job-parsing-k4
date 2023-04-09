@@ -94,8 +94,8 @@ def add_json(srv: HH | SJ, vcn: HHVacancy | SJVacancy, keyword: str, file: JSONF
     print('Обработка результатов...')
     for item in items:  # создаем коллекцию экземпляров вакансий
         Vacancy.all.append(vcn(item))
+    file.datafile = []  # сбрасываем файл
     file.insert(Vacancy.all)  # сохраняем данные в файл
-
 
 def print_result() -> None:  # вывод результатов
     print(f'Найдено {len(Vacancy.all)} вакансий.')
