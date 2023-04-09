@@ -5,6 +5,8 @@ from abc import ABC, abstractmethod
 from requests import get
 from pydantic import BaseModel, ValidationError
 
+EXCHANGERATE = 80  # курс для вакансий не в рублях
+
 
 class Vacancy:
     """
@@ -81,8 +83,12 @@ class HHVacancy(Vacancy):
             super().__init__(name=data['name'],
                              url=data['alternate_url'],
                              requirement=data['snippet']['requirement'],
-                             salary_from=data['salary']['from'],
-                             salary_to=data['salary']['to'])
+                             salary_from=0 if data['salary']['from'] is None else
+                             int(data['salary']['from']) if data['salary']['currency'] == 'RUR'
+                             else int(data['salary']['from']) * EXCHANGERATE,
+                             salary_to=0 if data['salary']['to'] is None else
+                             int(data['salary']['to']) if data['salary']['currency'] == 'RUR'
+                             else int(data['salary']['to']) * EXCHANGERATE)
         self.service_name = "HeadHunter"
 
 
@@ -102,8 +108,12 @@ class SJVacancy(Vacancy):
             super().__init__(name=data['profession'],
                              url=data['link'],
                              requirement=data['candidat'],
-                             salary_from=data['payment_from'],
-                             salary_to=data['payment_to'])
+                             salary_from=0 if data['payment_from'] is None else
+                             int(data['payment_from']) if data['currency'] == 'rub'
+                             else int(data['payment_from']) * EXCHANGERATE,
+                             salary_to=0 if data['payment_to'] is None else
+                             int(data['payment_to']) if data['currency'] == 'rub'
+                             else int(data['payment_to']) * EXCHANGERATE)
         self.service_name = "SuperJob"
 
 
@@ -125,7 +135,6 @@ class HH(API):
             'text': keyword,
             'area': 113,
             'page': page,
-            'currency': 'RUR',
             'per_page': 100,
             'only_with_salary': True,
             'search_field': 'name'
