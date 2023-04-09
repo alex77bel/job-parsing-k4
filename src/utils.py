@@ -10,10 +10,8 @@ def create_collection_from_file(vacancies) -> None:  # создает колле
 def filter_by_salary(salary: int) -> None:  # фильтрует коллекцию Vacancy.all по зарплате salary
     result = []
     for vacancy in Vacancy.all:
-        salary_from = vacancy.salary_from if vacancy.salary_from else 0
-        salary_to = vacancy.salary_to if vacancy.salary_to else 0
-        if salary >= salary_from:  # если salary удовлетворят
-            if not salary_to or salary <= salary_to:  # зарплате в вакансии
+        if salary >= vacancy.salary_from:  # если salary удовлетворят
+            if not vacancy.salary_to or salary <= vacancy.salary_to:  # зарплате в вакансии
                 result.append(vacancy)  # сохраняем промежуточный список
     Vacancy.all = result
 
