@@ -5,13 +5,14 @@ from abc import ABC, abstractmethod
 from requests import get
 from pydantic import BaseModel, ValidationError
 
-EXCHANGERATE = 80  # курс для вакансий не в рублях
+EXCHANGE_RATE = 80  # курс перевода зарплаты в рубли
 
 
 class Vacancy:
     """
     Класс вакансии
     """
+
     all: list = []  # буфер для временного хранения экземпляров вакансий при сортировке и т.д.
 
     def __init__(self, **attrs) -> None:  # создаем экземпляр с нужными полями
@@ -85,10 +86,10 @@ class HHVacancy(Vacancy):
                              requirement=data['snippet']['requirement'],
                              salary_from=0 if data['salary']['from'] is None else
                              data['salary']['from'] if data['salary']['currency'] == 'RUR'
-                             else data['salary']['from'] * EXCHANGERATE,
+                             else data['salary']['from'] * EXCHANGE_RATE,
                              salary_to=0 if data['salary']['to'] is None else
                              data['salary']['to'] if data['salary']['currency'] == 'RUR'
-                             else data['salary']['to'] * EXCHANGERATE)
+                             else data['salary']['to'] * EXCHANGE_RATE)
         self.service_name = "HeadHunter"
 
 
@@ -110,14 +111,18 @@ class SJVacancy(Vacancy):
                              requirement=data['candidat'],
                              salary_from=0 if data['payment_from'] is None else
                              data['payment_from'] if data['currency'] == 'rub'
-                             else data['payment_from'] * EXCHANGERATE,
+                             else data['payment_from'] * EXCHANGE_RATE,
                              salary_to=0 if data['payment_to'] is None else
                              data['payment_to'] if data['currency'] == 'rub'
-                             else data['payment_to'] * EXCHANGERATE)
+                             else data['payment_to'] * EXCHANGE_RATE)
         self.service_name = "SuperJob"
 
 
-class API(ABC):  # абстрактный класс для создания API
+class API(ABC):
+    """
+    Абстрактный класс для создания API
+    """
+
     @abstractmethod
     def get_request(self, keyword):
         pass
@@ -194,7 +199,11 @@ class SJ(API):
         return result
 
 
-class FileInterface(ABC):  # абстрактный класс для работы с файлом
+class FileInterface(ABC):
+    """
+    Абстрактный класс для работы с файлом
+    """
+
     @abstractmethod
     def insert(self, data):
         pass
@@ -214,8 +223,8 @@ class JSONFileInterface(FileInterface):
         if not self.is_file_exists(self.filename):  # проверяем существование файла
             self.datafile = []  # создаем пустой, если не существует
 
-    @property
-    def datafile(self) -> list[dict] | None:  # геттер, читаем файл
+    @property  # геттер, читаем файл
+    def datafile(self) -> list[dict] | None:
         with open(self.filename, encoding='utf-8') as file:
             try:  # пробуем преобразовать в JSON
                 data = json.load(file)
@@ -224,8 +233,8 @@ class JSONFileInterface(FileInterface):
             else:
                 return data
 
-    @datafile.setter
-    def datafile(self, data: list[dict]) -> None:  # сеттер, пишем файл
+    @datafile.setter  # сеттер, пишем файл
+    def datafile(self, data: list[dict]) -> None:
         with open(self.filename, 'w', encoding='utf-8') as file:
             json.dump(data, file, ensure_ascii=False, indent=2)
 
@@ -253,12 +262,12 @@ class JSONFileInterface(FileInterface):
                     file_ready = False
         return file_ready
 
-    def insert(self, data: list[Vacancy]) -> None:  # добавление данных из коллекции Vacancy.all в файл
+    def insert(self, data: list[Vacancy]) -> None:  # добавление данных в файл
         result = self.datafile
         for item in data:
             result.append(item.__dict__)
         self.datafile = result
 
-    @staticmethod
+    @staticmethod  # проверка существования файла
     def is_file_exists(filename: str) -> bool:
         return os.path.exists(filename)

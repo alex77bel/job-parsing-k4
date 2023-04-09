@@ -1,13 +1,19 @@
 from src.classes import *
 
 
-def create_collection_from_file(vacancies) -> None:  # создает коллекцию Vacancy.all
+def create_collection_from_file(vacancies) -> None:
+    """
+    Создает коллекцию Vacancy.all
+    """
     Vacancy.all.clear()
     for vacancy in vacancies:
         Vacancy.all.append(HHVacancy(vacancy) if vacancy['service_name'] == 'HeadHunter' else SJVacancy(vacancy))
 
 
-def filter_by_salary(salary: int) -> None:  # фильтрует коллекцию Vacancy.all по зарплате salary
+def filter_by_salary(salary: int) -> None:
+    """
+    Фильтрует коллекцию Vacancy.all по зарплате salary
+    """
     result = []
     for vacancy in Vacancy.all:
         if salary >= vacancy.salary_from:  # если salary удовлетворят
@@ -16,7 +22,10 @@ def filter_by_salary(salary: int) -> None:  # фильтрует коллекц�
     Vacancy.all = result
 
 
-def filter_by_service(service: int) -> None:  # фильтрует коллекцию Vacancy.all по сервису: 1-НН 2-SJ
+def filter_by_service(service: int) -> None:
+    """
+    Фильтрует коллекцию Vacancy.all по сервису: 1-НН 2-SJ
+    """
     result = []
     for vacancy in Vacancy.all:
         if service == 1:  # оставляем только НН
@@ -28,7 +37,10 @@ def filter_by_service(service: int) -> None:  # фильтрует коллек�
     Vacancy.all = result
 
 
-def filter_by_requirement(word: str) -> None:  # фильтрует коллекцию Vacancy.all по фразе в поле requirement
+def filter_by_requirement(word: str) -> None:
+    """
+    Фильтрует коллекцию Vacancy.all по фразе в поле requirement
+    """
     result = []
     for vacancy in Vacancy.all:
         if word.lower() in vacancy.requirement.lower():
@@ -36,11 +48,17 @@ def filter_by_requirement(word: str) -> None:  # фильтрует коллек
     Vacancy.all = result
 
 
-def get_top(n: int) -> None:  # оставляет top n вакансий в коллекции Vacancy.all
+def get_top(n: int) -> None:
+    """
+    Оставляет top n вакансий в коллекции Vacancy.all
+    """
     Vacancy.all = Vacancy.all[len(Vacancy.all) - n:]
 
 
-def user_input_for_request() -> tuple[str, str] | str:  # функция для получения от пользователя данных для запроса
+def user_input_for_request() -> tuple[str, str] | str:
+    """
+    Функция для получения от пользователя данных для запроса
+    """
     while True:
         service = input(
             f'На каком сервисе будем искать? ("1" - HeadHunter | "2" - SuperJob | "0" - на всех | "stop" - выход): ')
@@ -52,14 +70,16 @@ def user_input_for_request() -> tuple[str, str] | str:  # функция для 
     return service, keyword
 
 
-def user_menu_loaded() -> tuple[int, int, str] | str:  # меню пользователя для выбора действий с загруженными данными
+def user_menu_loaded() -> tuple[int, int, str | int] | str:
+    """
+    Меню пользователя для выбора действий с загруженными данными
+    """
     print('Выберите действия с данными:')
     while True:
         service = input(
             '\t- Фильтровать вакансии по сервису ("1" - только Head Hunter | "2" - только Super Job | "0" - оба | "stop" - выход):\n')
         if service in ('0', '1', '2', 'stop'): break
     if service == 'stop': return 'stop'
-    service = int(service)
 
     while True:
         salary = input('\t- Фильтровать вакансии по зарплате ("1" - да | "0" - нет | "stop" - выход):\n')
@@ -69,7 +89,6 @@ def user_menu_loaded() -> tuple[int, int, str] | str:  # меню пользов
         while True:
             salary = input(f'Введите размер заработной платы:\n')
             if salary.isdigit(): break
-    salary = int(salary)
 
     while True:
         req = input('\t- Искать фразу в требованиях к вакансии ("1" - да | "0" - нет | "stop" - выход):\n')
@@ -80,7 +99,7 @@ def user_menu_loaded() -> tuple[int, int, str] | str:  # меню пользов
     else:
         req = 0
 
-    return service, salary, req
+    return int(service), int(salary), req
 
 
 def add_json(srv: HH | SJ, vcn: HHVacancy | SJVacancy, keyword: str, file: JSONFileInterface) -> None:
@@ -95,7 +114,11 @@ def add_json(srv: HH | SJ, vcn: HHVacancy | SJVacancy, keyword: str, file: JSONF
         Vacancy.all.append(vcn(item))
     file.insert(Vacancy.all)  # сохраняем данные в файл
 
-def print_result() -> None:  # вывод результатов
+
+def print_result() -> None:
+    """
+    Выводит результаты
+    """
     print(f'Найдено {len(Vacancy.all)} вакансий.')
     while True:
         select = input('\t- Отсортировать результат по зарплате?  '
