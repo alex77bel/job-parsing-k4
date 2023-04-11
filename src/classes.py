@@ -68,18 +68,27 @@ class Vacancy:
         return self.salary <= other.salary
 
 
-class HHVacancy(Vacancy):
+class VacancyFromJSON:
+    """
+    Класс mixin для инициализации экземпляра вакансии данными из JSON файла
+    """
+
+    def init_from_json(self, data: dict) -> None:
+        super().__init__(name=data['name'],  # название вакансии
+                         url=data['url'],  # ссылка на вакансию
+                         requirement=data['requirement'],  # требования
+                         salary_from=data['salary_from'],  # зп от
+                         salary_to=data['salary_to'])  # зп до
+
+
+class HHVacancy(VacancyFromJSON, Vacancy):
     """
     Вакансия HeadHunter
     """
 
     def __init__(self, data: dict) -> None:
         if data.get('service_name'):  # если создаем из файла
-            super().__init__(name=data['name'],  # название вакансии
-                             url=data['url'],  # ссылка на вакансию
-                             requirement=data['requirement'],  # требования
-                             salary_from=data['salary_from'],  # зп от
-                             salary_to=data['salary_to'])  # зп до
+            self.init_from_json(data)
         else:  # если создаем из запроса
             super().__init__(name=data['name'],
                              url=data['alternate_url'],
@@ -93,18 +102,14 @@ class HHVacancy(Vacancy):
         self.service_name = "HeadHunter"
 
 
-class SJVacancy(Vacancy):
+class SJVacancy(VacancyFromJSON, Vacancy):
     """
     Вакансия SuperJob
     """
 
     def __init__(self, data: dict) -> None:
         if data.get('service_name'):  # если создаем из файла
-            super().__init__(name=data['name'],  # название вакансии
-                             url=data['url'],  # ссылка на вакансию
-                             requirement=data['requirement'],  # требования
-                             salary_from=data['salary_from'],  # зп от
-                             salary_to=data['salary_to'])  # зп до
+            self.init_from_json(data)  # название вакансии
         else:  # если создаем из запроса
             super().__init__(name=data['profession'],
                              url=data['link'],
